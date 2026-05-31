@@ -4,6 +4,7 @@ import OrganizationMember from "./organisationMember";
 import Document from "./document";
 import Conversation from "./conversation";
 import Message from "./message";
+import DocumentChunk from "./documentChunks";
 
 User.hasMany(Organization, {
     foreignKey: "owner_id",
@@ -52,4 +53,5 @@ export {
     Document,
     Conversation,
     Message,
+    DocumentChunk
 };
