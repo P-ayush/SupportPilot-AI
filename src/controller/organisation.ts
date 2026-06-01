@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { Organization } from "../models";
+import { AuthRequest } from "../types/authRequest";
 
-export const createOrganization = async (req: Request, res: Response) => {
+export const createOrganization = async (req: AuthRequest, res: Response) => {
     try {
         const { name } = req.body;
         const ownerId = req.user!.id;
@@ -12,7 +13,7 @@ export const createOrganization = async (req: Request, res: Response) => {
     }
 }
 
-export const listOrganizations = async (req: Request, res: Response) => {
+export const listOrganizations = async (req: AuthRequest, res: Response) => {
     try {
 
         const limit = Math.min(Number(req.query.limit) || 10,

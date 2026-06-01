@@ -2,8 +2,10 @@ import { Request, Response } from "express";
 import { Document, Organization } from "../models";
 import fs from "fs/promises";
 import { IDocument } from "../types/document.types";
+import { processDocument } from "../rag/processDocument";
+import { AuthRequest } from "../types/authRequest";
 
-export const uploadDocument = async (req: Request, res: Response) => {
+export const uploadDocument = async (req: AuthRequest, res: Response) => {
     try {
         const { organizationId } = req.params;
         if (!req.file) {
@@ -23,8 +25,11 @@ export const uploadDocument = async (req: Request, res: Response) => {
             organization_id: Number(organizationId),
             file_name: req.file.originalname,
             file_path: req.file.path,
-            status: "UPLOADED",
+            status: "processing",
         });
+        const documentData = document.get() as IDocument;
+
+        await processDocument(documentData.id);
         return res.status(201).json({
             success: true,
             message: "Document uploaded successfully",
@@ -32,12 +37,13 @@ export const uploadDocument = async (req: Request, res: Response) => {
         });
 
     } catch (error) {
+        console.log(error);
         return res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 }
 
 
-export const listDocuments = async (req: Request, res: Response) => {
+export const listDocuments = async (req: AuthRequest, res: Response) => {
     try {
         const limit = Math.min(Number(req.query.limit) || 10,
             100
@@ -65,7 +71,7 @@ export const listDocuments = async (req: Request, res: Response) => {
     }
 }
 
-export const deleteDocument = async (req: Request, res: Response) => {
+export const deleteDocument = async (req: AuthRequest, res: Response) => {
     try {
         const { organizationId, documentId } = req.params
         const organisation = await Organization.findOne({ where: { id: organizationId, owner_id: req.user!.id } })

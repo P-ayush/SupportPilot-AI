@@ -3,7 +3,8 @@ import { Request, Response, NextFunction } from "express";
 import { User } from "../models";
 import { JwtPayload } from "../types/auth.types";
 import { IUser } from "../types/user.types";
-const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+import { AuthRequest } from "../types/authRequest";
+const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
         if (!req.headers.authorization) {
             return res.status(401).json({

@@ -1,11 +1,13 @@
-const { createOrganization, listOrganizations } = require("../controller/organisation");
-const { createOrganizationSchema } = require("../validation/organisation");
-const { validate } = require("../middleware/validation");
+import authMiddleware from "../middleware/auth";
+import { validate } from "../middleware/validation";
+import { createOrganizationSchema } from "../validation/organisation";
+import { createOrganization, listOrganizations } from "../controller/organisation";
+
 const { Router } = require("express");
 
 const router = Router();
 
-router.post("/create", validate(createOrganizationSchema), createOrganization);
-router.get("/list", listOrganizations);
+router.post("/create", authMiddleware, validate(createOrganizationSchema), createOrganization);
+router.get("/list", authMiddleware, listOrganizations);
 
-export default router;
+export default router;  
