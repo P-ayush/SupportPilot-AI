@@ -24,6 +24,10 @@ const DocumentChunk = sequelize.define(
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        embedding: {
+            type: DataTypes.JSON,
+            allowNull: true,
+        }
     },
     {
         tableName: "document_chunks",

@@ -2,6 +2,7 @@ import loadDocument from "./documentLoader";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { Document, DocumentChunk } from "../models";
 import { IDocument } from "../types/document.types";
+import { embedDocuments } from "./embeddings"
 export const processDocument = async (
     documentId: number,
 ) => {
@@ -24,14 +25,17 @@ export const processDocument = async (
             await splitter.splitDocuments(
                 docs
             );
+        const vectors = await embedDocuments(chunks.map(chunk => chunk.pageContent));
         let data = []
         for (let i = 0; i < chunks.length; i++) {
             data.push({
                 document_id: documentId,
                 chunk_text: chunks[i].pageContent,
-                chunk_index: i
+                chunk_index: i,
+                embedding: vectors[i]
             })
         }
+        await DocumentChunk.bulkCreate(data);
         await document.update({
             status: "completed",
             total_chunks: chunks.length
