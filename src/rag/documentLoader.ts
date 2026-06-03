@@ -1,5 +1,7 @@
 import path from "path";
-
+import fs from "fs";
+import { PDFParse } from "pdf-parse";
+import { Document } from "@langchain/core/documents"
 import {
     JSONLoader,
     JSONLinesLoader,
@@ -28,7 +30,26 @@ const loadDocument = async (
                 filePath
             ).load();
 
+        case ".pdf": {
 
+
+            const buffer = fs.readFileSync(filePath);
+
+            const parser = new PDFParse({
+                data: buffer
+            });
+
+            const result = await parser.getText();
+
+            return [
+                new Document({
+                    pageContent: result.text,
+                    metadata: {
+                        source: filePath
+                    }
+                })
+            ];
+        }
         default:
             throw new Error(
                 `Unsupported file type: ${extension}`
